@@ -14,18 +14,36 @@ import java.util.concurrent.CountDownLatch;
 public final class Pipe {
 
     public static void main(String[] args) {
+        KafkaStreams streams = new KafkaStreams(createTopology(), prepareConfiguration());
+        runStreamsClient(streams);
+    }
+
+    private static Properties prepareConfiguration() {
         Properties configuration = new Properties();
         configuration.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-pipe");
         configuration.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configuration.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         configuration.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        return configuration;
+    }
 
+    private static Topology createTopology() {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         streamsBuilder.stream("streams-plaintext-input").to("streams-plaintext-output");
+        return streamsBuilder.build();
+    }
 
-        Topology topology = streamsBuilder.build();
+    private static void runStreamsClient(KafkaStreams streams) {
+        CountDownLatch latch = addShutdownHookToCloseStreams(streams);
+        try {
+            streams.start();
+            latch.await();
+        } catch (InterruptedException e) {
+            log.error("Running kafka streams has been interrupted", e);
+        }
+    }
 
-        final KafkaStreams streams = new KafkaStreams(topology, configuration);
+    private static CountDownLatch addShutdownHookToCloseStreams(final KafkaStreams streams) {
         final CountDownLatch latch = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread("streams-shutdown-hook") {
             @Override
@@ -34,12 +52,6 @@ public final class Pipe {
                 latch.countDown();
             }
         });
-
-        try {
-            streams.start();
-            latch.await();
-        } catch (InterruptedException e) {
-            log.error("Running kafka streams has been interrupted", e);
-        }
+        return latch;
     }
 }
