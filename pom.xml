@@ -9,8 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <kafka-streams.version>2.2.0</kafka-streams.version>
-        <kafka-clients.version>2.2.0</kafka-clients.version>
+        <kafka.version>2.2.0</kafka.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
 
@@ -18,13 +17,20 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>${kafka-streams.version}</version>
+            <version>${kafka.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>${kafka-clients.version}</version>
+            <version>${kafka.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams-test-utils</artifactId>
+            <version>${kafka.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
