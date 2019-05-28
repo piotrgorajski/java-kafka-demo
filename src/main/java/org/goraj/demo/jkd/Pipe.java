@@ -27,7 +27,7 @@ public final class Pipe {
         return configuration;
     }
 
-    private static Topology createTopology() {
+    static Topology createTopology() {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         streamsBuilder.stream("streams-plaintext-input").to("streams-plaintext-output");
         return streamsBuilder.build();
