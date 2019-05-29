@@ -19,7 +19,7 @@ public class PipeTest {
         configuration.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "pipe-test");
         configuration.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "fake:1234");
 
-        TopologyTestDriver topologyTestDriver = new TopologyTestDriver(Pipe.createTopology(), configuration);
+        TopologyTestDriver topologyTestDriver = new TopologyTestDriver(new Pipe().createTopology(), configuration);
         ConsumerRecordFactory<String, String> factory = new ConsumerRecordFactory<>("streams-plaintext-input", new StringSerializer(), new StringSerializer());
         topologyTestDriver.pipeInput(factory.create("this is value"));
         ProducerRecord<String, String> outputRecord = topologyTestDriver.readOutput("streams-plaintext-output", new StringDeserializer(), new StringDeserializer());
