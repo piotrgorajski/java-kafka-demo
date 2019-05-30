@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PipeTest {
 
     @Test
@@ -28,8 +30,12 @@ public class PipeTest {
             topologyTestDriver.pipeInput(factory.create(inputValue));
 
             //then
-            ProducerRecord<String, String> outputRecord = topologyTestDriver.readOutput("streams-plaintext-output", new StringDeserializer(), new StringDeserializer());
-            OutputVerifier.compareValue(outputRecord, inputValue);
+            OutputVerifier.compareValue(readOutput(topologyTestDriver), inputValue);
+            assertThat(readOutput(topologyTestDriver)).isNull();
         }
+    }
+
+    private ProducerRecord<String, String> readOutput(TopologyTestDriver topologyTestDriver) {
+        return topologyTestDriver.readOutput("streams-plaintext-output", new StringDeserializer(), new StringDeserializer());
     }
 }
