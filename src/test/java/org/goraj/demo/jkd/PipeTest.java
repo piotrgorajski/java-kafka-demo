@@ -22,9 +22,10 @@ public class PipeTest {
         Properties configuration = new Properties();
         configuration.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "pipe-test");
         configuration.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "fake:1234");
+
+        //when
         Topology topology = new Pipe().createTopology();
         try (TopologyTestDriver topologyTestDriver = new TopologyTestDriver(topology, configuration)) {
-            //when
             ConsumerRecordFactory<String, String> factory = new ConsumerRecordFactory<>("streams-plaintext-input", new StringSerializer(), new StringSerializer());
             String inputValue = "this is value";
             topologyTestDriver.pipeInput(factory.create(inputValue));

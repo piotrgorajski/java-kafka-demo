@@ -26,9 +26,9 @@ public class LineSplitTest {
         configuration.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         configuration.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
+        //when
         Topology topology = new LineSplit().createTopology();
         try (TopologyTestDriver topologyTestDriver = new TopologyTestDriver(topology, configuration)) {
-            //when
             ConsumerRecordFactory<String, String> factory = new ConsumerRecordFactory<>("streams-plaintext-input", new StringSerializer(), new StringSerializer());
             topologyTestDriver.pipeInput(factory.create("this is value"));
 

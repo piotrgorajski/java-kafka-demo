@@ -20,11 +20,11 @@ import java.util.concurrent.CountDownLatch;
 public final class WordCount {
 
     public static void main(String[] args) {
-        KafkaStreams streams = new KafkaStreams(createTopology(), prepareConfiguration());
-        runStreamsClient(streams);
+        WordCount wordCount = new WordCount();
+        wordCount.runStreamsClient();
     }
 
-    private static Properties prepareConfiguration() {
+    private Properties prepareConfiguration() {
         Properties configuration = new Properties();
         configuration.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-word-count");
         configuration.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -33,7 +33,7 @@ public final class WordCount {
         return configuration;
     }
 
-    private static Topology createTopology() {
+    Topology createTopology() {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KStream<String, String> source = streamsBuilder.stream("streams-plaintext-input");
         KStream<String, String> words = source.flatMapValues(value ->
@@ -44,7 +44,8 @@ public final class WordCount {
         return streamsBuilder.build();
     }
 
-    private static void runStreamsClient(KafkaStreams streams) {
+    private void runStreamsClient() {
+        KafkaStreams streams = new KafkaStreams(createTopology(), prepareConfiguration());
         CountDownLatch latch = addShutdownHookToCloseStreams(streams);
         try {
             streams.start();
@@ -54,8 +55,8 @@ public final class WordCount {
         }
     }
 
-    private static CountDownLatch addShutdownHookToCloseStreams(final KafkaStreams streams) {
-        final CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch addShutdownHookToCloseStreams(KafkaStreams streams) {
+        CountDownLatch latch = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread("streams-shutdown-hook") {
             @Override
             public void run() {
